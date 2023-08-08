@@ -3,8 +3,8 @@ package com.lolhistory.datamodel;
 import com.google.gson.annotations.SerializedName;
 
 data class SummonerRankInfo (
-    @SerializedName("summonerNmae")
-    var summonerNmae: String,
+    @SerializedName("summonerName")
+    var summonerName: String,
 
     @SerializedName("queueType")
     var queueType: String,

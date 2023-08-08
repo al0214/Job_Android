@@ -11,12 +11,16 @@ interface RiotAPI {
     @Headers(
         "Content-Type: application/json;charset=utf-8",
         "Accept: application/json",
-        "X-Riot-Token" + BaseUrl.RIOT_API_KEY
+        "X-Riot-Token: " + BaseUrl.RIOT_API_KEY
     )
-
     @GET(BaseUrl.RIOT_API_GET_SUMMONER + "{userId}")
     fun getSummonerIdInfo(@Path("userId") userId: String): Single<SummoerIdInfo>
 
+    @Headers(
+        "Content-Type: application/json;charset=utf-8",
+        "Accept: application/json",
+        "X-Riot-Token: " + BaseUrl.RIOT_API_KEY
+    )
     @GET(BaseUrl.RIOT_API_GET_RANK + "{userId}")
     fun getSummonerRankInfo(@Path("userId") userId: String): Single<List<SummonerRankInfo>>
 

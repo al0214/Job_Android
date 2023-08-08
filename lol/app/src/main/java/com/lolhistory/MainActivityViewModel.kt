@@ -18,6 +18,7 @@ class MainActivityViewModel: ViewModel() {
     private val _summonerRankInfoLiveData = MutableLiveData<SummonerRankInfo>()
     val summonerRankInfoLiveData: LiveData<SummonerRankInfo> get() = _summonerRankInfoLiveData
     fun getSummonerIdInfo(summonerName: String) {
+        if(summonerName.isEmpty()) return
         RiotRepository.getSummonerIdInfo(summonerName)
             .subscribe(object : SingleObserver<SummoerIdInfo>{
                 override fun onSubscribe(d: Disposable) {
@@ -43,6 +44,7 @@ class MainActivityViewModel: ViewModel() {
     }
 
     fun getSummonerRankInfo(id: String){
+
         RiotRepository
             .getSummonerRankInfo(id)
             .subscribe(object : SingleObserver<List<SummonerRankInfo>>{
