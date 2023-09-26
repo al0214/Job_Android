@@ -1,10 +1,8 @@
 package com.lolhistory.datamodel
 
-import android.graphics.Paint.Style
 import com.google.gson.annotations.SerializedName
-import okhttp3.internal.connection.RouteSelector
 
-data class MachHistory(
+data class MatchHistory(
     @SerializedName("info")
     var info: Info
 ) {
@@ -22,8 +20,9 @@ data class MachHistory(
         var queueId: Int,
 
         @SerializedName("participants")
-        var participants: Participants,
+        var participants: List<Participants>,
     ){
+
         data class Participants(
             @SerializedName("assist")
             var assist: Int,

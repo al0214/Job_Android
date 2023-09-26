@@ -1,6 +1,7 @@
 package com.lolhistory.repository
 
 import com.google.gson.annotations.SerializedName
+import com.lolhistory.datamodel.MatchHistory
 import com.lolhistory.datamodel.SummoerIdInfo
 import com.lolhistory.datamodel.SummonerRankInfo
 import com.lolhistory.retrofit.APIClinent
@@ -26,6 +27,20 @@ object RiotRepository {
         .getSummonerRankInfo(summonerId)  // RiotAPI를 통해 랭크 정보 요청을 보냅니다.
         .subscribeOn(Schedulers.io())       // 백그라운드 스레드에서 요청을 처리합니다.
         .observeOn(AndroidSchedulers.mainThread())  // UI 스레드에서 결과를 처리합니다.
+
+    fun getMatchHistoryList(
+        puuid:String,
+        start:Int,
+        count:Int
+    ): Single<List<String>> = riotV5API
+        .getMatchHistoryList(puuid, start, count)
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+
+    fun getMatchHistory(matchId: String): Single<MatchHistory> = riotV5API
+        .getMatchHistory(matchId)
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
 }
 
 // 이 파일은 Riot 게임 데이터를 가져오기 위한 리포지토리 클래스를 정의하고 있습니다.

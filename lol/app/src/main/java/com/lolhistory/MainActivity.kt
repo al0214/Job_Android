@@ -1,11 +1,15 @@
 package com.lolhistory
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.lolhistory.databinding.ActivityMainBinding
 import com.lolhistory.datamodel.SummonerRankInfo
 import java.util.Locale
@@ -15,6 +19,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainActivityViewModel
 
     private var puuid = ""
+
+    private var isVisibleLayoutInfo = false
+
+    private val inputMethodManager by lazy {
+        this@MainActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +44,13 @@ class MainActivity : AppCompatActivity() {
             binding.pbLoding.visibility = View.VISIBLE
             viewModel.getSummonerIdInfo(binding.etInputSummoner.text.toString().trim())
             binding.etInputSummoner.setText("")
+            inputMethodManager.hideSoftInputFromWindow(binding.etInputSummoner.windowToken, 0)
+        }
+
+        binding.rvHistory.layoutManager = LinearLayoutManager(this)
+        binding.rvHistory.setHasFixedSize(true)
+        binding.layoutSwipe.setOnRefreshListener {
+            viewModel.getSummonerIdInfo(binding.tvSummonerName.text.toString())
         }
 
         viewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
@@ -54,10 +71,35 @@ class MainActivity : AppCompatActivity() {
         viewModel.summonerRankInfoLiveData.observe(this){
             if(it != null){
                 // 랭크 정보 가져오기 성공
+                Log.d("TESTLOG", "summonerRankInfoLiveData observe")
                 setRankInfo(it)
+                binding.layoutInput.visibility = View.GONE
             } else {
                 binding.pbLoding.visibility = View.GONE
             }
+        }
+
+        viewModel.matchHistoryListLiveData.observe(this){
+            if (it.isEmpty()){
+                // 대전 기록 없음
+            }else{
+                val historyAdapter = HistoryAdapter(ArrayList(it), puuid)
+                binding.rvHistory.adapter = historyAdapter
+                binding.layoutSwipe.isRefreshing = false
+            }
+            binding.pbLoding.visibility = View.GONE
+        }
+    }
+
+    override fun onBackPressed() {
+        if(isVisibleLayoutInfo){
+            // 정보 창 출력 중
+            binding.layoutInfo.visibility = View.GONE
+            binding.layoutInput.visibility = View.VISIBLE
+            isVisibleLayoutInfo = !isVisibleLayoutInfo
+        } else {
+            // 검색 창 출력 중
+            finish()
         }
     }
 
@@ -84,8 +126,7 @@ class MainActivity : AppCompatActivity() {
         setTierEmblem(summonerRankInfo.tier)
 
         binding.layoutInfo.visibility = View.VISIBLE
-
-        binding.pbLoding.visibility = View.GONE
+        isVisibleLayoutInfo = true
     }
 
     private fun setTierEmblem(tier: String){
